@@ -1,0 +1,78 @@
+#!/bin/bash
+
+#need to know build number in order to access mongo stuff
+#maybe we should put the database files for virtool into /share/mongo
+
+function main() {
+
+  VIRTOOL_RUNNING="false"
+  MONGOD_RUNNING="false"
+
+  #check if virtool is already running
+  if [ -e ../share/virtool-2.3.2-0/virtool.pid ] ; then
+    VIRTOOL_RUNNING="true"
+  fi
+
+  if [ -n "$1" ] ; then
+
+    if [ "$1" = "on" ] ; then
+
+      if [ $VIRTOOL_RUNNING = "true" ] ; then
+        echo "virtool is already running" >&2
+        exit 1
+      fi
+
+      virtool_start
+      exit 0
+    fi
+
+    if [ "$1" = "off" ] ; then
+
+      if [ "$VIRTOOL_RUNNING" = "false" ] ; then
+        echo "virtool is not running already" >&2
+        exit 1
+      fi
+
+      virtool_stop
+      exit 0
+    fi
+
+  #printout help here, user didn't specify to start or stop virtool
+  fi
+}
+
+function is_mongod_running() {
+
+  #check pid file
+  if [ ! -e ../share/virtool-2.3.2-0/mongo/virtooldb.pid ] ; then
+    MONGOD_RUNNING="true"
+  fi
+}
+
+function mongod_start() {
+
+  
+}
+
+function virtool_start() {
+
+  #check if mongod is running, make sure it is. loop until it starts?
+  is_mongod_running
+  if [ "$MONGOD_RUNNING" = "false" ] ; then
+    mongod_start 
+  fi
+
+  #start virtool and setup pid
+  python run.py &
+  echo $! > ../share/virtool-2.3.2-0/virtool.pid
+}
+
+function virtool_stop() {
+
+  #stop virtool and remove pid
+  kill -9 `cat ../share/virtool-2.3.2-0/virtool.pid`
+  rm ../share/virtool-2.3.2-0/virtool.pid
+}
+
+main "$@"
+
