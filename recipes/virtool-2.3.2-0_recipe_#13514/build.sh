@@ -7,6 +7,10 @@ PKG_BUILDNUM=0
 INSTALL=${PREFIX}/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 
 #build client
+if [ -e ~/.npm ] ; then
+  rm -rf ~/.npm ;
+fi
+
 npm install -g yarn
 npm install -g webpack@v3.11.0
 
