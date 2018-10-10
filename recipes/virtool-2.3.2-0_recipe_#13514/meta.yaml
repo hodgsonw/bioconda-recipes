@@ -1,0 +1,36 @@
+package:
+    name: virtool
+    version: "2.3.2"
+
+requirements:
+    build:
+       - nodejs >=6.11.5
+       - python 3.6
+    run:
+       - skewer 0.2.2
+       - certifi 2018.1.18
+       - mongodb 3.4
+       - hmmer 3.1b2
+       - bowtie2 2.3.2
+       - spades 3.8.1
+       - numpy 1.15.1
+       - python 3.6
+
+source:
+    fn: virtool-2.3.2.zip
+    url: https://github.com/virtool/virtool/archive/v2.3.2.zip
+    sha256: 230bc9b67bfa356b93e13d52d61a2da5ee9bb680d1077228176a356419137f5f
+
+build:
+    number: 0
+
+test:
+    commands:
+            - python run.py --help
+
+about:
+    summary: Virtool is a web-based application for diagnosing viral infections in plant samples using Illumina sequencing.
+    home: https://www.virtool.ca/
+    license: The MIT License (MIT)
+    license_file: LICENSE
+
