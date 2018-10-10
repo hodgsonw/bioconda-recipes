@@ -7,9 +7,6 @@ PKG_BUILDNUM=0
 INSTALL=${PREFIX}/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 
 #build client
-
-#pip install -r ${SRC_DIR}/requirements.txt
-
 npm install -g yarn
 npm install -g webpack@v3.11.0
 
