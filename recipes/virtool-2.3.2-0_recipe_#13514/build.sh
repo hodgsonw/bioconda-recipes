@@ -28,4 +28,4 @@ cp -r ${SRC_DIR}/* $INSTALL
 #ensure executables are available in the environment's bin folder
 ln -s ${INSTALL}/run.py ${PREFIX}/bin/run.py
 
-chmod 0755 ${PREFIX}/run.py
+chmod 0755 ${PREFIX}/bin/run.py
