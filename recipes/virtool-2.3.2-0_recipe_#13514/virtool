@@ -18,7 +18,7 @@ function main() {
     if [ "$1" = "on" ] ; then
 
       if [ $VIRTOOL_RUNNING = "true" ] ; then
-        echo "virtool is already running" >&2
+        echo "virtool is already running \n" >&2
         exit 1
       fi
 
@@ -29,7 +29,7 @@ function main() {
     if [ "$1" = "off" ] ; then
 
       if [ "$VIRTOOL_RUNNING" = "false" ] ; then
-        echo "virtool is not running already" >&2
+        echo "virtool is not running already \n" >&2
         exit 1
       fi
 
@@ -44,14 +44,19 @@ function main() {
 function is_mongod_running() {
 
   #check pid file
-  if [ ! -e ../share/virtool-2.3.2-0/mongo/virtooldb.pid ] ; then
+  if [ -e ../share/virtool-2.3.2-0/mongo/virtooldb.pid ] ; then
     MONGOD_RUNNING="true"
   fi
 }
 
 function mongod_start() {
 
-  
+  mongod --config ../share/virtool-2.3.2-0/mongo/mongo.conf
+}
+
+function mongod_stop() {
+
+ kill -2 `cat ../share/virtool-2.3.2-0/mongo/virtooldb.pid` 
 }
 
 function virtool_start() {
@@ -70,8 +75,13 @@ function virtool_start() {
 function virtool_stop() {
 
   #stop virtool and remove pid
-  kill -9 `cat ../share/virtool-2.3.2-0/virtool.pid`
+  kill -2 `cat ../share/virtool-2.3.2-0/virtool.pid`
   rm ../share/virtool-2.3.2-0/virtool.pid
+
+  is_mongod_running
+  if [ "$MONGOD_RUNNING" = "true" ] ; then
+    mongod_stop
+  fi
 }
 
 main "$@"
