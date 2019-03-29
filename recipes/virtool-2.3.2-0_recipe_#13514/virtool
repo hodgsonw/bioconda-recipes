@@ -2,14 +2,16 @@
 
 #need to know build number in order to access mongo stuff
 #maybe we should put the database files for virtool into /share/mongo
+#create an is_virtool_running function?
+
+DATADIR="../share/virtool"
 
 function main() {
-
   VIRTOOL_RUNNING="false"
   MONGOD_RUNNING="false"
 
   #check if virtool is already running
-  if [ -e ../share/virtool-2.3.2-0/virtool.pid ] ; then
+  if [ -e $DATADIR/virtool.pid ] ; then
     VIRTOOL_RUNNING="true"
   fi
 
@@ -18,7 +20,7 @@ function main() {
     if [ "$1" = "on" ] ; then
 
       if [ $VIRTOOL_RUNNING = "true" ] ; then
-        echo "virtool is already running" >&2
+        echo "virtool is already running \n" >&2
         exit 1
       fi
 
@@ -29,7 +31,7 @@ function main() {
     if [ "$1" = "off" ] ; then
 
       if [ "$VIRTOOL_RUNNING" = "false" ] ; then
-        echo "virtool is not running already" >&2
+        echo "virtool is not running already \n" >&2
         exit 1
       fi
 
@@ -37,26 +39,35 @@ function main() {
       exit 0
     fi
 
-  #printout help here, user didn't specify to start or stop virtool
+    echo "help goes here"
   fi
 }
 
 function is_mongod_running() {
 
   #check pid file
-  if [ ! -e ../share/virtool-2.3.2-0/mongo/virtooldb.pid ] ; then
+  if [ ! -e $DATADIR/mongo/virtooldb.pid ] ; then
     MONGOD_RUNNING="true"
+  else
+    MONGOD_RUNNING="false"
   fi
 }
 
 function mongod_start() {
-
   
+  mongod -f $DATADIR/mongo/mongo.conf
+  #echo $! > $DATADIR/virtooldb.pid
+}
+
+function mongod_stop() {
+ 
+  kill -2 `cat $DATADIR/mongo/virtooldb.pid`
+  #rm $DATADIR/mongo/virtooldb.pid 
 }
 
 function virtool_start() {
 
-  #check if mongod is running, make sure it is. loop until it starts?
+  #check if mongod is running, make sure it is. loop X times until it starts?
   is_mongod_running
   if [ "$MONGOD_RUNNING" = "false" ] ; then
     mongod_start 
@@ -64,14 +75,21 @@ function virtool_start() {
 
   #start virtool and setup pid
   python run.py &
-  echo $! > ../share/virtool-2.3.2-0/virtool.pid
+  echo $! > $DATADIR/virtool.pid
+  VIRTOOL_RUNNING="true"
 }
 
 function virtool_stop() {
 
   #stop virtool and remove pid
-  kill -9 `cat ../share/virtool-2.3.2-0/virtool.pid`
-  rm ../share/virtool-2.3.2-0/virtool.pid
+  kill -2 `cat $DATADIR/virtool.pid`
+  rm $DATADIR/virtool.pid
+  VIRTOOL_RUNNING="false"
+
+  is_mongod_running
+  if [ "$MONGOD_RUNNING" = "true" ] ; then
+    mongod_stop
+  fi
 }
 
 main "$@"

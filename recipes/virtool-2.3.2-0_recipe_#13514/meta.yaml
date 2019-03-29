@@ -1,7 +1,9 @@
+{% set name = "virtool" %}
 {% set version = "2.3.2" %}
+{% set build = "1" %}
 
 package:
-    name: virtool
+    name: "{{ name }}"
     version: "{{ version }}"
 
 requirements:
@@ -66,12 +68,12 @@ requirements:
         - uvloop 0.9.1
         - yarl 1.0.0
 source:
-    fn: "virtool-{{ version }}.zip"
+    fn: "{{ name }}-{{ version }}.zip"
     url: "https://github.com/virtool/virtool/archive/v{{ version }}.zip"
     sha256: 230bc9b67bfa356b93e13d52d61a2da5ee9bb680d1077228176a356419137f5f
 
 build:
-    number: 0
+    number: "{{ build }}"
     skip: True # [not py36]
 
 test:
