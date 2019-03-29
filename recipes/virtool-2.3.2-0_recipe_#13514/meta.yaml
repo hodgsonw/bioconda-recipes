@@ -1,6 +1,7 @@
 {% set name = "virtool" %}
 {% set version = "2.3.2" %}
 {% set build = "1" %}
+{% set sha256 = "230bc9b67bfa356b93e13d52d61a2da5ee9bb680d1077228176a356419137f5f" %}
 
 package:
     name: "{{ name }}"
@@ -8,7 +9,7 @@ package:
 
 requirements:
     build:
-        - nodejs >=6.11.5
+        - nodejs >=6.11.5,<=9
         - python 3.6
     run:
         - skewer 0.2.2
@@ -69,8 +70,8 @@ requirements:
         - yarl 1.0.0
 source:
     fn: "{{ name }}-{{ version }}.zip"
-    url: "https://github.com/virtool/virtool/archive/v{{ version }}.zip"
-    sha256: 230bc9b67bfa356b93e13d52d61a2da5ee9bb680d1077228176a356419137f5f
+    url: "https://github.com/{{ name }}/{ name }}/archive/v{{ version }}.zip"
+    sha256: "{{ sha256 }}"
 
 build:
     number: "{{ build }}"
@@ -83,6 +84,9 @@ test:
 about:
     summary: Virtool is a web-based application for diagnosing viral infections in plant samples using Illumina sequencing.
     home: https://www.virtool.ca/
-    license: MIT License
+    license: MIT
+    license_family: MIT
     license_file: LICENSE
+    dev_url: https://github.com/virtool/virtool
+    doc_url: https://www.virtool.ca/docs/
 
