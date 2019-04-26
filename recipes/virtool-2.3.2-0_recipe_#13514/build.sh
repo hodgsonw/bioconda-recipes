@@ -26,26 +26,7 @@ mkdir -p $INSTALL/virtooldb
 
 #conda removes empty folders from packages. this keeps the virtooldb folder present for mongo
 touch $INSTALL/virtooldb/.deleteMe
-
-
-#set up mongodb config
-cat << EOF >$INSTALL/mongo/mongo.conf
-processManagement:
-   fork: true
-   pidFilePath: ./virtooldb.pid
-net:
-   bindIp: localhost
-   port: 27017
-storage:
-   dbPath: ../virtooldb/
-systemLog:
-   destination: file
-   path: ./virtooldb.log
-   logAppend: true
-storage:
-   journal:
-       enabled: true
-EOF
+touch $INSTALL/mongo/.deleteMe
 
 echo "v$PKG_VERSION" > ${SRC_DIR}/VERSION
 
