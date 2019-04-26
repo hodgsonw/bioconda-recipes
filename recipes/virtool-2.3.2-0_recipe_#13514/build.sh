@@ -2,7 +2,7 @@
 
 PKG_NAME=virtool
 PKG_VERSION=2.3.2
-PKG_BUILDNUM=0
+PKG_BUILDNUM=1
 
 INSTALL=${PREFIX}/share/$PKG_NAME
 
@@ -46,6 +46,8 @@ storage:
    journal:
        enabled: true
 EOF
+
+echo "v$PKG_VERSION" > ${SRC_DIR}/VERSION
 
 #move from sourcedir to install location
 cp -r ${SRC_DIR}/* $INSTALL
