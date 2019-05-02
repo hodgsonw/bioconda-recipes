@@ -5,15 +5,23 @@
 #create an is_virtool_running function?
 
 DATADIR="$CONDA_PREFIX/share/virtool"
-MONGO_PORT="27017"
+
+if [ -z $MONGO_PORT ] ; then
+  MONGO_PORT="27017"
+fi
+if [ -z $VIRTOOL_PORT] ; then
+  VIRTOOL_PORT="9950"
+fi
 
 function main() {
   VIRTOOL_RUNNING="false"
   MONGOD_RUNNING="false"
 
   #check if virtool is already running
-  if [ -e $DATADIR/virtool.pid ] ; then
+  if [ -e $DATADIR/virtool.pid ] && [ $( ps -ea | grep $( cat $DATADIR/virtool.pid ) | awk '{print $4}') == "virtool" ]; then
     VIRTOOL_RUNNING="true"
+  else
+    VIRTOOL_RUNNING="false"
   fi
 
   if [ -n "$1" ] ; then
@@ -37,6 +45,13 @@ function main() {
       fi
 
       virtool_stop
+
+	
+      is_mongod_running
+      if [ "$MONGOD_RUNNING" = "true" ] ; then
+        mongod_stop
+      fi
+
       exit 0
     fi
 
@@ -47,7 +62,7 @@ function main() {
 function is_mongod_running() {
 
   #check pid file
-  if [ -e ../share/virtool-2.3.2-0/mongo/virtooldb.pid ] ; then
+  if [ -e $DATADIR/mongo/mongo.pid ]  && [ $( ps -ea | grep $( cat $DATADIR/mongo/mongo.pid ) | awk '{print $4}') == "mongod" ]; then
     MONGOD_RUNNING="true"
   else
     MONGOD_RUNNING="false"
@@ -57,14 +72,11 @@ function is_mongod_running() {
 function mongod_start() {
   
   mongod --fork --pidfilepath $DATADIR/mongo/mongo.pid --logappend --logpath $DATADIR/mongo/mongo.log --dbpath $DATADIR/virtooldb --journal --port $MONGO_PORT
-  #echo $! > $DATADIR/virtooldb.pid
 }
 
 function mongod_stop() {
  
-  kill -2 `cat $DATADIR/mongo/virtooldb.pid`
-  #rm $DATADIR/mongo/virtooldb.pid 
- 
+  kill -2 `cat $DATADIR/mongo/mongo.pid`
 }
 
 function virtool_start() {
@@ -76,7 +88,7 @@ function virtool_start() {
   fi
 
   #start virtool and setup pid
-  python run.py &
+  python $CONDA_PREFIX/bin/run.py --port $VIRTOOL_PORT &
   echo $! > $DATADIR/virtool.pid
   VIRTOOL_RUNNING="true"
 }
@@ -87,11 +99,6 @@ function virtool_stop() {
   kill -2 `cat $DATADIR/virtool.pid`
   rm $DATADIR/virtool.pid
   VIRTOOL_RUNNING="false"
-
-  is_mongod_running
-  if [ "$MONGOD_RUNNING" = "true" ] ; then
-    mongod_stop
-  fi
 }
 
 main "$@"
